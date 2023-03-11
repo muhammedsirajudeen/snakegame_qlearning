@@ -79,6 +79,9 @@ class Snake{
                 }
             }
             else if(event.detail==="ArrowUp"){
+                if(snake_context.snake_length.length!=1){
+                    if(snake_context.last_action==="down") return 0
+                   }
                 // snake_context.position_y-=10
                 snake_context.last_action="up"
 
@@ -95,6 +98,9 @@ class Snake{
             }
             else if(event.detail==="ArrowDown"){
                 // snake_context.position_y+=10
+                if(snake_context.snake_length.length!=1){
+                    if(snake_context.last_action==="up") return 0
+                   }
                 snake_context.last_action="down"
 
                 snake_context.snake_length[0][1]+=10
