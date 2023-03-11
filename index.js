@@ -10,69 +10,143 @@ class Snake{
         this.position_y=0
         this.fruit_x=0
         this.fruit_y=0
-        // this.snake_length=1
+        this.snake_length=[[0,0]] //initial length of the snake
         this.unseeable=-10000
-      
+        this.snake_pointer=[]
+        this.last_action=""
     }
     //x and y cordinates of the snake
     
     snake_position_updater(){
         let snake_context=this
         document.addEventListener('snakemover', function(event) {
-            
-           
+
+            console.log(snake_context.snake_length)
+            console.log(snake_context.snake_pointer)
+
           
-            if(snake_context.position_x>490 ){
-                snake_context.position_x=0
+            if(snake_context.snake_length[0][0]>490 ){
+                snake_context.snake_length[0][0]=0
             }
-            else if(snake_context.position_x<0){
-                snake_context.position_x=490
+            else if(snake_context.snake_length[0][0]<0){
+                snake_context.snake_length[0][0]=490
 
             }
-            if(snake_context.position_y>490){
-                snake_context.position_y=0
+            if(snake_context.snake_length[0][1]>490 ){
+                snake_context.snake_length[0][1]=0
             }
-            else if(snake_context.position_y<0){
-                snake_context.position_y=490
+            else if(snake_context.snake_length[0][1]<0){
+                snake_context.snake_length[0][1]=490
+
             }
+            //starting snake movement
           
             if(event.detail==="ArrowRight"){
-                
-                snake_context.position_x+=10
+               if(snake_context.snake_length.length!=1){
+                if(snake_context.last_action==="left") return 0
+               }
+                // snake_context.position_x+=10
+                snake_context.last_action="right"
+                snake_context.snake_length[0][0]+=10
+                       
+                snake_context.snake_pointer=snake_context.snake_length[0]
+                for(let i=1;i<snake_context.snake_length.length;i++){
+
+                        snake_context.snake_length[i][0]=snake_context.snake_pointer[0]-10
+                        snake_context.snake_length[i][1]=snake_context.snake_pointer[1]
+                        snake_context.snake_pointer=snake_context.snake_length[i]
+                    
+                }
+
                 
             }
             else if(event.detail==="ArrowLeft"){
-                snake_context.position_x-=10
+                // snake_context.position_x-=10
+                if(snake_context.snake_length.length!=1){
+                    if(snake_context.last_action==="right") return 0
+                   }
+                snake_context.last_action="left"
+
+                snake_context.snake_length[0][0]-=10
+                       
+                snake_context.snake_pointer=snake_context.snake_length[0]
+                for(let i=1;i<snake_context.snake_length.length;i++){
+
+                        snake_context.snake_length[i][0]=snake_context.snake_pointer[0]+10
+                        snake_context.snake_length[i][1]=snake_context.snake_pointer[1]
+                        snake_context.snake_pointer=snake_context.snake_length[i]
+                    
+                }
             }
             else if(event.detail==="ArrowUp"){
-                snake_context.position_y-=10
+                // snake_context.position_y-=10
+                snake_context.last_action="up"
+
+                snake_context.snake_length[0][1]-=10
+                       
+                snake_context.snake_pointer=snake_context.snake_length[0]
+                for(let i=1;i<snake_context.snake_length.length;i++){
+
+                        snake_context.snake_length[i][0]=snake_context.snake_pointer[0]
+                        snake_context.snake_length[i][1]=snake_context.snake_pointer[1]+10
+                        snake_context.snake_pointer=snake_context.snake_length[i]
+                    
+                }
             }
             else if(event.detail==="ArrowDown"){
-                snake_context.position_y+=10
+                // snake_context.position_y+=10
+                snake_context.last_action="down"
+
+                snake_context.snake_length[0][1]+=10
+                       
+                snake_context.snake_pointer=snake_context.snake_length[0]
+                for(let i=1;i<snake_context.snake_length.length;i++){
+
+                        snake_context.snake_length[i][0]=snake_context.snake_pointer[0]
+                        snake_context.snake_length[i][1]=snake_context.snake_pointer[1]-10
+                        snake_context.snake_pointer=snake_context.snake_length[i]
+                    
+                }
             }
            
            
         });
         
+    }
+
+    snake_drawer(){
+        for(let i=0;i<this.snake_length.length;i++){
+            if(i===0){
+
+                this.ctx.fillStyle = "darkred";
+                this.ctx.fillRect(this.snake_length[i][0], this.snake_length[i][1], 10, 10);  
+            }
+            else{
+
+            
+            this.ctx.fillStyle = "#FF0000";
+            this.ctx.fillRect(this.snake_length[i][0], this.snake_length[i][1], 10, 10);
+            }
         }
+    }
 
 
     snake_motion(){
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        
-        this.ctx.fillStyle = "#FF0000";
-        this.ctx.fillRect(this.position_x, this.position_y, 10, 10);
+        this.snake_drawer()
         this.ctx.fillStyle="green"
         this.ctx.fillRect(this.fruit_x, this.fruit_y, 10, 10);
-        if(this.position_x===this.fruit_x && this.position_y===this.fruit_y){
+        //collission detection
+        if(this.snake_length[0][0]===this.fruit_x && this.snake_length[0][1]===this.fruit_y){
+            console.log(this.snake_pointer[0])
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.ctx.fillStyle = "#FF0000";
-            this.ctx.fillRect(this.position_x, this.position_y, 10, 10);
+            this.snake_length.push([this.snake_pointer[0]-10,this.snake_pointer[1]])
+            
+            this.snake_drawer()
             this.fruit_x=this.unseeable
             this.fruit_y=this.unseeable
             this.fruit_position_placer()
-            this.snake_length+=10
+           
         }
         requestAnimationFrame(this.snake_motion.bind(this))
     }
