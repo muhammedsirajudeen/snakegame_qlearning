@@ -1,4 +1,4 @@
-//the width and height 49*49 that is just scaled down version of 490*490
+
 
 class Snake{
     constructor(){
@@ -226,3 +226,81 @@ rightbutton.onclick=()=>{
 
 }
 
+
+
+
+class Qlearning{
+    constructor(){
+        this.environment_row=50
+        this.environment_column=50
+        this.qtable=[]
+        this.rewardstable=[]
+        this.actions=["up","down","left","right"]
+    }
+    //constructing a table 50x50x4 a three dimensional matrix
+    create_qtable(){
+        for(let i=0;i<50;i++){
+            this.qtable[i]=[]
+            for(let j=0;j<50;j++ ){
+                this.qtable[i][j]=[]
+                for(let k=0;k<4;k++){
+                    this.qtable[i][j][k]=k
+                }
+            }
+        }
+        }
+    create_rewardstable(){
+        
+        for(let i=0;i<50;i++){
+            this.rewardstable[i]=[]
+            for(let j=0;j<50;j++){
+                if(i===snake_class.fruit_y/10 && j===snake_class.fruit_x/10){
+                    this.rewardstable[i][j]=100
+                   
+                    continue
+                }
+                this.rewardstable[i][j]=-1
+            }
+        }
+
+        
+    }
+    get_next_action(current_row,current_column){
+        let action_index=Math.max(this.qtable[current_row][current_column])
+        return action_index
+        //index of the favourable action to be done
+    }
+    snake_navigator(){
+        let starting_position_x=20
+        let starting_position_y=20
+        let shortest_path=[]
+        shortest_path.push([starting_position_x,starting_position_y])
+        while(this.rewardstable[starting_position_x,starting_position_y]!==100){
+            let action=this.get_next_action(starting_position_x,starting_position_y)
+            if(this.actions[action]==="up"){
+                starting_position_y-=20
+                shortest_path.push([starting_position_x,starting_position_y])
+            }
+            else if(this.actions[action]==="down"){
+                starting_position_y+=10
+                shortest_path.push([starting_position_x,starting_position_y])
+
+            }
+            else if(this.actions[action]==="left"){
+                starting_position_x-=10
+                shortest_path.push([starting_position_x,starting_position_y])
+
+            }
+            else if(this.actions[action]==="right"){
+                starting_position_x+=10
+                shortest_path.push([starting_position_x,starting_position_y])
+
+            }
+        }
+        return shortest_path
+    }
+}
+
+let qlearning=new Qlearning()
+qlearning.create_qtable()
+qlearning.create_rewardstable()
